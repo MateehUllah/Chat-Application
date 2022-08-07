@@ -3,13 +3,13 @@ const http=require('http')
 const express=require("express")
 const socketio=require("socket.io")
 const filter=require('bad-words')
+const{generateMessage,generateLocationMessage}=require('./utils/message')
+
 const app = express();
 const server=http.createServer(app)
 const io=socketio(server)
 
-
 const Port=process.env.PORT||3000
-
 const publicDirectoryPath=path.join(__dirname,'../public')
 
 app.use(express.static(publicDirectoryPath))
@@ -18,9 +18,9 @@ io.on("connection",(socket)=>{
   
 
    //Emiting msg to new client
-   socket.emit("message","Welcome to chat Applciation")
+   socket.emit("message",generateMessage('Welcome!!!'))
    // To emit everybody except new connection
-   socket.broadcast.emit('message','A new user has joined')
+   socket.broadcast.emit('message',generateMessage('A new user has joined!!!'))
 
    socket.on('sendMessage',(message,callback)=>{
    const filte=new filter()
@@ -28,7 +28,7 @@ io.on("connection",(socket)=>{
     return callback('Profanity is not allowed')
    }
     //Every client
-    io.emit('message',message)
+    io.emit('message',generateMessage(message))
    //sending acknowledgment back to client
     callback()
   })
@@ -36,13 +36,14 @@ io.on("connection",(socket)=>{
   //while sharing location
   socket.on("sendLocation",(position,callback)=>{
   
-    io.emit('message',`https://google.com/maps?q=${position.latitude},${position.longitude}`)
+    io.emit('locationMessage',generateLocationMessage(`https://google.com/maps?q=${position.latitude},${position.longitude}`))
     
     callback()
   })
   //when disconnected
   socket.on('disconnect',()=>{
-    io.emit("message","A User has left!!")
+
+    io.emit("message",generateMessage('A user has left!!!'))
   })
 
 })
