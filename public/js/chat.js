@@ -11,6 +11,11 @@ const messageTemplate=document.querySelector("#message-template").innerHTML
 const locationTemplate=document.querySelector("#location-message-template").innerHTML
 
 
+//options
+const {username,room}=Qs.parse(location.search,{
+    ignoreQueryPrefix:true
+})
+
 socket.on("message",(message)=>{
     console.log(message)
     const html=Mustache.render(messageTemplate,{
@@ -63,3 +68,5 @@ sendLoc.addEventListener('click',()=>{
         })
     },)
 })
+console.log(username,room)
+socket.emit('join',{username,room})

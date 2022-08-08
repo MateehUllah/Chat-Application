@@ -16,11 +16,16 @@ app.use(express.static(publicDirectoryPath))
 io.on("connection",(socket)=>{
     console.log("New WebSocket Connection")
   
-
-   //Emiting msg to new client
+  socket.on('join',({username,room})=>{
+    socket.join(room)
+    //io.to.emit,socket.broadcase.to.emit
+    //above methods are for specific group
+    //Emiting msg to new client
    socket.emit("message",generateMessage('Welcome!!!'))
    // To emit everybody except new connection
-   socket.broadcast.emit('message',generateMessage('A new user has joined!!!'))
+   socket.broadcast.to(room).emit('message',generateMessage(`${username} has joined!!!`))
+  })
+
 
    socket.on('sendMessage',(message,callback)=>{
    const filte=new filter()
